@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "API for multiplayer music guessing game",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phknot/Musiquiz.git"
+  },
+  "keywords": [
+    "online",
+    "game",
+    "music",
+    "quiz",
+    "spotify",
+    "api"
+  ],
+  "author": "P.H. Knot",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/phknot/Musiquiz/issues"
+  },
+  "homepage": "https://github.com/phknot/Musiquiz#readme"
+}
