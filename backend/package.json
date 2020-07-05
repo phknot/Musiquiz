@@ -37,8 +37,11 @@
     "spotify-web-api-node": "^4.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.4.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
     "jsdoc": "^3.6.4",
     "nodemon": "^2.0.4",
     "npx": "^10.2.2"
