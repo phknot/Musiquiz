@@ -9,6 +9,8 @@ const spotifyApi = new SpotifyWebApi({
   clientSecret: process.env.CLIENT_SECRET,
 });
 
+const spotifyApiLimit = 100;
+
 spotifyApi.clientCredentialsGrant().then(
   (data) => {
     console.log(`The access token is ${data.body.access_token}`);
@@ -21,6 +23,36 @@ spotifyApi.clientCredentialsGrant().then(
 
 app.use(express.json());
 
+function getRecommendationWithPreview(genres) {
+  const promise = new Promise(function (resolve, reject) {
+    let recommendation;
+    spotifyApi
+      .getRecommendations({
+        seed_genres: genres,
+        limit: spotifyApiLimit,
+      })
+      .then((rec) => {
+        const randomIndex = Math.floor(
+          Math.random() *
+            Math.min(spotifyApiLimit, rec.body.seeds[0].afterRelinkingSize)
+        );
+        recommendation = rec.body.tracks[randomIndex];
+
+        if (recommendation.preview_url) {
+          // console.log(recommendation);
+          console.log("Recommendation had preview url");
+          resolve(recommendation);
+        } else {
+          getRecommendationWithPreview(genres);
+        }
+      })
+      .catch((err) => {
+        reject();
+        console.error(err);
+      });
+  });
+  return promise;
+}
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.get("/search/:name", (req, res) => {
@@ -34,33 +66,18 @@ app.get("/search/:name", (req, res) => {
   );
 });
 
-app.get("/recommendations/", (req, res) => {
-  console.log(req.body.genres);
-  if (!req.body.genres) {
+app.get("/recommendation/", (req, res) => {
+  if (req.body.genres.length === 0 || req.body.genres.length > 5) {
     res.status(400);
-    res.send("Include at least 1 genre");
+    res.send("Include between 1 and 5 genres");
   }
 
-  spotifyApi
-    .getRecommendations({
-      seed_genres: req.body.genres,
-    })
-    .then((rec) => {
-      res.send(rec);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  getRecommendationWithPreview(req.body.genres).then((result) => {
+    res.send(result);
+  });
 });
 
 app.get("/genres", (req, res) => {
-  // console.log(spotifyApi.getAccessToken());
-  // spotifyApi.getCategories().then((cat) => {
-  //     res.send(cat);
-  // }).catch((err) => {
-  //     console.error(err);
-  // });
-
   axios
     .get("https://api.spotify.com/v1/recommendations/available-genre-seeds", {
       headers: {
